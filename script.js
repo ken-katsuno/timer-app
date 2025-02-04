@@ -4,7 +4,7 @@ if ("serviceWorker" in navigator) {
     .then(() => console.log("Service Worker Registered"));
 }
 
-// グローバル変数
+// グローバル変数の定義
 let currentNewsIndex = 0;      // 現在のニュース項目のインデックス（0～）
 let programTime = 0;           // 番組時間（秒）
 let remainingProgramTime = 0;  // 残りの番組時間（秒）
@@ -13,7 +13,7 @@ let remainingCushionTime = 0;  // クッション時間（秒）
 let elapsedTime = 0;           // 現在のニュース項目の実際の読了時間（秒）
 let newsTimes = [];            // 各ニュース項目の予定尺（秒）の配列
 
-// スケジュールタイマー用変数（自動スケジュール管理）
+// スケジュールタイマー用のタイムアウトID
 let scheduleTimeout = null;
 
 // DOMから各ニュース項目の予定尺（秒）を取得する関数
@@ -68,7 +68,7 @@ function startTimer() {
   newsTimes = getNewsTimes();
   document.getElementById("start").disabled = true;
   
-  // Pre‑start UI を非表示、Running UI を表示
+  // Pre‑start UI を非表示に、Running UI を表示
   document.querySelector('.prestart-ui').style.display = "none";
   document.querySelector('.running-ui').style.display = "block";
   
@@ -81,7 +81,7 @@ function startTimer() {
   container.classList.add('running');
 }
 
-// 番組時間のカウントダウンおよびニュース項目の読了時間更新
+// 番組時間のカウントダウンと、ニュース項目の読了時間更新
 function updateTimer() {
   remainingProgramTime--;
   elapsedTime++;
@@ -141,7 +141,7 @@ function resetTimer() {
   container.classList.remove('running');
   container.classList.add('pre-start');
   
-  // スケジュール済みのタイマーがあればクリア
+  // 既にスケジュールされているタイマーがあればクリア
   if (scheduleTimeout) {
     clearTimeout(scheduleTimeout);
     scheduleTimeout = null;
@@ -161,7 +161,7 @@ function addNewsItem() {
   calculateCushionTime();
 }
 
-// 指定した開始時刻に自動でタイマーを開始する関数（秒まで対応）
+// 指定した開始時刻に自動でタイマーを開始する関数（テキスト入力対応）
 // ※入力欄の onchange イベントで自動呼び出しされます
 function scheduleTimer() {
   const startTimeInput = document.getElementById('start-time').value;
@@ -176,7 +176,7 @@ function scheduleTimer() {
   const now = new Date();
   let targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), targetHour, targetMinute, targetSecond);
   
-  // 対象時刻が現在よりも過去の場合は翌日に設定
+  // 指定時刻が現在より過去の場合は翌日に設定
   if (targetTime <= now) {
     targetTime.setDate(targetTime.getDate() + 1);
   }
@@ -189,7 +189,6 @@ function scheduleTimer() {
     clearTimeout(scheduleTimeout);
   }
   
-  // 指定時刻になったら startTimer() を実行
   scheduleTimeout = setTimeout(() => {
     startTimer();
   }, delay);
