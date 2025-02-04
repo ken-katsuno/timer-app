@@ -1,234 +1,147 @@
-/* ------------------ */
-/* å…±é€šã‚¹ã‚¿ã‚¤ãƒ« */
-/* ------------------ */
-body {
-  background: #000; /* é»’èƒŒæ™¯ */
-  font-family: 'Anton', sans-serif;
-  color: #fff;
-  margin: 0;
-  padding: 0;
+let currentNewsIndex = 0;      // Œ»İ‚Ìƒjƒ…[ƒX€–Ú‚ÌƒCƒ“ƒfƒbƒNƒXi0`j
+let programTime = 0;           // ”Ô‘gŠÔi•bj
+let remainingProgramTime = 0;  // c‚è‚Ì”Ô‘gŠÔi•bj
+let timerInterval;             // ”Ô‘gŠÔƒJƒEƒ“ƒgƒ_ƒEƒ“—pƒ^ƒCƒ}[
+let remainingCushionTime = 0;  // ƒNƒbƒVƒ‡ƒ“ŠÔi•bj
+let elapsedTime = 0;           // Œ»İ‚Ìƒjƒ…[ƒX€–Ú‚ÌÀÛ‚Ì“Ç—¹ŠÔi•bj
+let newsTimes = [];            // Šeƒjƒ…[ƒX€–Ú‚Ì—\’èÚi•bj‚Ì”z—ñ
+
+// DOM‚©‚çŠeƒjƒ…[ƒX€–Ú‚Ì—\’èÚi•bj‚ğæ“¾
+function getNewsTimes() {
+  let times = [];
+  const inputs = document.querySelectorAll("#news-list .planned-time");
+  inputs.forEach(input => {
+    let value = Number(input.value);
+    times.push(value || 0);
+  });
+  return times;
 }
 
-.timer-container {
-  width: 95%;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: center;
-}
-
-/* ------------------ */
-/* Preâ€‘start UIï¼ˆç•ªçµ„é–‹å§‹å‰ï¼‰ */
-/* ------------------ */
-.prestart-ui {
-  margin-top: 40px;
-}
-.program-time-input {
-  margin-bottom: 20px;
-  font-size: 2em;
-}
-.program-time-input input {
-  width: 60px;
-  padding: 10px;
-  margin: 0 10px;
-  border: 2px solid #fff;
-  border-radius: 5px;
-  font-size: 2em;
-  background: transparent;
-  color: #fff;
-}
-.program-time-input span {
-  font-size: 2em;
-  color: #fff;
-}
-.news-items ul {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 20px;
-}
-.news-items li {
-  margin-bottom: 20px;
-}
-.news-items input {
-  width: 200px;
-  padding: 10px;
-  margin: 0 10px;
-  border: 2px solid #fff;
-  border-radius: 5px;
-  font-size: 2em;
-  background: transparent;
-  color: #fff;
-}
-#add-item,
-#start {
-  background: transparent;
-  color: #fff;
-  border: 2px solid #fff;
-  padding: 15px 30px;
-  border-radius: 5px;
-  font-size: 2em;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-#add-item:hover,
-#start:hover {
-  background: #fff;
-  color: #000;
-}
-
-/* Preâ€‘start UIï¼šã‚¯ãƒƒã‚·ãƒ§ãƒ³æ™‚é–“è¡¨ç¤º */
-#pre-cushion-time {
-  font-size: 2em;
-  margin: 20px 0;
-}
-#pre-cushion-time .label {
-  font-size: 0.5em;
-}
-#pre-cushion-time .value {
-  font-size: 2.5em;
-}
-
-/* Preâ€‘start UI è¡¨ç¤º */
-.pre-start .prestart-ui {
-  display: block;
-}
-.pre-start .running-ui {
-  display: none;
-}
-
-/* ------------------ */
-/* Running UIï¼ˆã‚¿ã‚¤ãƒãƒ¼é–‹å§‹å¾Œï¼‰ */
-/* ------------------ */
-/* CSS Grid ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã§é…ç½® */
-.running-ui {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto auto;
-  grid-template-areas:
-    "time-left cushion-time"
-    "current-news current-news"
-    "end-item reset";
-  gap: 10px;
-  height: 100vh;
-  align-items: center;
-  justify-items: center;
-}
-
-/* å·¦ä¸Šï¼šæ®‹ã‚Šç•ªçµ„æ™‚é–“ï¼ˆãƒ©ãƒ™ãƒ«ã¯å°ã•ãã€æ•°å­—ã¯å¤§ããï¼‰ */
-#time-left {
-  grid-area: time-left;
-  width: 100%;
-  padding-left: 20px;
-  text-align: left;
-}
-#time-left .label {
-  font-size: 0.5em;
-}
-#time-left .value {
-  font-size: 5em;
-}
-
-/* å³ä¸Šï¼šã‚¯ãƒƒã‚·ãƒ§ãƒ³æ™‚é–“ï¼ˆãƒ©ãƒ™ãƒ«ã¯å°ã•ãã€æ•°å­—ã¯å¤§ããï¼‰ */
-#cushion-time {
-  grid-area: cushion-time;
-  width: 100%;
-  padding-right: 20px;
-  text-align: right;
-}
-#cushion-time .label {
-  font-size: 0.5em;
-}
-#cushion-time .value {
-  font-size: 5em;
-}
-
-/* ä¸­å¤®ï¼šãƒ‹ãƒ¥ãƒ¼ã‚¹ã®ã‚¿ã‚¤ãƒˆãƒ«ï¼ˆå·¦å³ã«ã¾ãŸãŒã‚‹ï¼‰ */
-#current-news {
-  grid-area: current-news;
-  font-size: 4em;
-  text-align: center;
-  width: 100%;
-}
-
-/* å·¦ä¸‹ï¼šé …ç›®çµ‚äº†ãƒœã‚¿ãƒ³ï¼ˆãã“ãã“å¤§ããï¼‰ */
-#end-item {
-  grid-area: end-item;
-  font-size: 2.5em;
-  justify-self: start;
-  align-self: end;
-  margin-left: 20px;
-  background: transparent;
-  color: #fff;
-  border: 2px solid #fff;
-  padding: 15px 30px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-#end-item:hover {
-  background: #fff;
-  color: #000;
-}
-
-/* å³ä¸‹ï¼šãƒªã‚»ãƒƒãƒˆãƒœã‚¿ãƒ³ï¼ˆå°ã•ã‚ï¼‰ */
-#reset {
-  grid-area: reset;
-  font-size: 1.5em;
-  justify-self: end;
-  align-self: end;
-  margin-right: 20px;
-  background: transparent;
-  color: #fff;
-  border: 2px solid #fff;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-#reset:hover {
-  background: #fff;
-  color: #000;
-}
-
-/* Running UI è¡¨ç¤º */
-.running .prestart-ui {
-  display: none;
-}
-.running .running-ui {
-  display: block;
-  text-align: center;
-}
-
-/* ãƒ¡ãƒ‡ã‚£ã‚¢ã‚¯ã‚¨ãƒªä¾‹ï¼ˆã‚¹ãƒãƒ›å¯¾å¿œï¼‰ */
-@media screen and (max-width: 480px) {
-  .running-ui {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto auto auto;
-    grid-template-areas:
-      "time-left"
-      "cushion-time"
-      "current-news"
-      "end-item"
-      "reset";
+// ”Ô‘gŠÔ‚ÆŠeƒjƒ…[ƒX€–Ú‚Ì—\’èÚ‚©‚ç‰Šú‚ÌƒNƒbƒVƒ‡ƒ“ŠÔ‚ğŒvZ
+function calculateCushionTime() {
+  const minutes = Number(document.getElementById("program-time-minutes").value) || 0;
+  const seconds = Number(document.getElementById("program-time-seconds").value) || 0;
+  programTime = minutes * 60 + seconds;
+  if (programTime) {
+    remainingProgramTime = programTime;
   }
-  #time-left, #cushion-time {
-    padding: 0;
-    text-align: center;
+  
+  newsTimes = getNewsTimes();
+  const totalPlanned = newsTimes.reduce((a, b) => a + b, 0);
+  
+  remainingCushionTime = programTime - totalPlanned;
+  updateCushionDisplay();
+}
+
+// ƒNƒbƒVƒ‡ƒ“ŠÔ‚Ì•\¦XV
+function updateCushionDisplay() {
+  let displayText = "";
+  if (remainingCushionTime < 0) {
+    displayText = `- ${formatTime(Math.abs(remainingCushionTime))}`;
+  } else {
+    displayText = formatTime(remainingCushionTime);
   }
-  #time-left .value, #cushion-time .value {
-    font-size: 4em;
+  document.querySelector("#cushion-time .value").innerText = displayText;
+  document.querySelector("#pre-cushion-time .value").innerText = displayText;
+}
+
+// ŠÔ‚ğ mm:ss Œ`®‚ÉƒtƒH[ƒ}ƒbƒg‚·‚é
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+// ƒ^ƒCƒ}[ŠJn‚Ìˆ—
+function startTimer() {
+  calculateCushionTime();
+  newsTimes = getNewsTimes();
+  document.getElementById("start").disabled = true;
+  
+  // Pre-start UI ‚ğ”ñ•\¦‚ÉARunning UI ‚ğ•\¦
+  document.querySelector('.prestart-ui').style.display = "none";
+  document.querySelector('.running-ui').style.display = "block";
+  
+  currentNewsIndex = 0;
+  startNextNews();
+  timerInterval = setInterval(updateTimer, 1000);
+  
+  const container = document.querySelector('.timer-container');
+  container.classList.remove('pre-start');
+  container.classList.add('running');
+}
+
+// ”Ô‘gŠÔ‚ÌƒJƒEƒ“ƒgƒ_ƒEƒ“‚ÆAŒ»İ‚Ìƒjƒ…[ƒX€–Ú‚ÌÀÛ‚Ì“Ç—¹ŠÔ‚ÌXV
+function updateTimer() {
+  remainingProgramTime--;
+  elapsedTime++;
+  
+  if (remainingProgramTime <= 0) {
+    document.querySelector("#time-left .value").innerText = "00:00";
+    clearInterval(timerInterval);
+  } else {
+    document.querySelector("#time-left .value").innerText = formatTime(remainingProgramTime);
   }
-  #current-news {
-    font-size: 3em;
+}
+
+// Ÿ‚Ìƒjƒ…[ƒX€–Ú‚ğŠJn‚·‚é
+function startNextNews() {
+  if (currentNewsIndex < newsTimes.length) {
+    const titleInput = document.querySelectorAll("#news-list .news-title")[currentNewsIndex];
+    const title = titleInput && titleInput.value.trim() !== "" ? titleInput.value : `ƒjƒ…[ƒX ${currentNewsIndex + 1}`;
+    document.getElementById("current-news").innerText = title;
+    elapsedTime = 0;
+  } else {
+    clearInterval(timerInterval);
+    document.getElementById("current-news").innerText = "‘Sƒjƒ…[ƒXI—¹";
+    document.getElementById("end-item").disabled = true;
+    setTimeout(resetTimer, 3000);
   }
-  #end-item {
-    font-size: 2em;
-    margin: 10px;
-    justify-self: center;
-  }
-  #reset {
-    font-size: 1.2em;
-    margin: 10px;
-    justify-self: center;
-  }
+}
+
+// €–ÚI—¹ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚Æ‚«‚Ìˆ—
+function endItem() {
+  const plannedTime = newsTimes[currentNewsIndex] || 0;
+  const diff = plannedTime - elapsedTime;
+  remainingCushionTime += diff;
+  updateCushionDisplay();
+  
+  currentNewsIndex++;
+  startNextNews();
+  elapsedTime = 0;
+}
+
+// ƒŠƒZƒbƒgƒ{ƒ^ƒ“Fƒ^ƒCƒ}[isó‘Ô‚ğƒŠƒZƒbƒgi“ü—Í“à—e‚Í•Ûj
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  elapsedTime = 0;
+  remainingProgramTime = programTime;
+  document.querySelector("#time-left .value").innerText = formatTime(remainingProgramTime);
+  
+  // Pre-start UI ‚ğÄ•\¦ARunning UI ‚ğ”ñ•\¦‚É–ß‚·
+  document.querySelector('.prestart-ui').style.display = "block";
+  document.querySelector('.running-ui').style.display = "none";
+  
+  currentNewsIndex = 0;
+  calculateCushionTime();
+  document.getElementById("start").disabled = false;
+  document.getElementById("end-item").disabled = false;
+  
+  const container = document.querySelector('.timer-container');
+  container.classList.remove('running');
+  container.classList.add('pre-start');
+}
+
+// ƒjƒ…[ƒX€–Ú‚ğ“®“I‚É’Ç‰Á‚·‚é
+function addNewsItem() {
+  const newsList = document.getElementById("news-list");
+  const newIndex = newsList.children.length + 1;
+  const li = document.createElement("li");
+  li.innerHTML = `
+    <input type="text" class="news-title" placeholder="ƒjƒ…[ƒX€–Ú ${newIndex}">
+    <input type="number" class="planned-time" placeholder="—\’èÚi•bj" oninput="calculateCushionTime()">
+  `;
+  newsList.appendChild(li);
+  calculateCushionTime();
 }
