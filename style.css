@@ -21,24 +21,24 @@ body {
 /* Pre‑start UI（番組開始前） */
 /* ------------------ */
 .prestart-ui {
-  margin-top: 40px;
+  margin-top: 20px;
 }
 .program-time-input {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-size: 2em;
 }
 .program-time-input input {
-  width: 90px;
+  width: 60px;
   padding: 10px;
   margin: 0 10px;
   border: 2px solid #fff;
   border-radius: 5px;
-  font-size: 2em;
+  font-size: 1.2em;
   background: transparent;
   color: #fff;
 }
 .program-time-input span {
-  font-size: 2em;
+  font-size: 1.2em;
   color: #fff;
 }
 .news-items ul {
@@ -74,18 +74,6 @@ body {
 #start:hover {
   background: #fff;
   color: #000;
-}
-
-/* Pre‑start UI：クッション時間表示 */
-#pre-cushion-time {
-  font-size: 2em;
-  margin: 20px 0;
-}
-#pre-cushion-time .label {
-  font-size: 0.5em;
-}
-#pre-cushion-time .value {
-  font-size: 2.5em;
 }
 
 /* Pre‑start UI 表示 */
