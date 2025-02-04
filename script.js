@@ -43,16 +43,25 @@ function calculateCushionTime() {
   updateCushionDisplay();
 }
 
-// クッション時間の表示更新
+// クッション時間の表示更新（マイナスの場合は赤く表示）
 function updateCushionDisplay() {
   let displayText = "";
+  // pre‑start と running の両方のクッション時間表示要素を取得
+  const preCushionElem = document.querySelector("#pre-cushion-time .value");
+  const cushionElem = document.querySelector("#cushion-time .value");
+  
   if (remainingCushionTime < 0) {
     displayText = `- ${formatTime(Math.abs(remainingCushionTime))}`;
+    preCushionElem.classList.add("negative");
+    cushionElem.classList.add("negative");
   } else {
     displayText = formatTime(remainingCushionTime);
+    preCushionElem.classList.remove("negative");
+    cushionElem.classList.remove("negative");
   }
-  document.querySelector("#cushion-time .value").innerText = displayText;
-  document.querySelector("#pre-cushion-time .value").innerText = displayText;
+  
+  preCushionElem.innerText = displayText;
+  cushionElem.innerText = displayText;
 }
 
 // 秒数を mm:ss 形式にフォーマットする関数
@@ -68,7 +77,7 @@ function startTimer() {
   newsTimes = getNewsTimes();
   document.getElementById("start").disabled = true;
   
-  // Pre‑start UI を非表示に、Running UI を表示
+  // Pre‑start UI を非表示にし、Running UI を表示
   document.querySelector('.prestart-ui').style.display = "none";
   document.querySelector('.running-ui').style.display = "block";
   
@@ -81,7 +90,7 @@ function startTimer() {
   container.classList.add('running');
 }
 
-// 番組時間のカウントダウンと、ニュース項目の読了時間更新
+// 番組時間のカウントダウンとニュース項目の読了時間更新
 function updateTimer() {
   remainingProgramTime--;
   elapsedTime++;
@@ -129,7 +138,7 @@ function resetTimer() {
   remainingProgramTime = programTime;
   document.querySelector("#time-left .value").innerText = formatTime(remainingProgramTime);
   
-  // UIを元に戻す
+  // UI を元に戻す
   document.querySelector('.prestart-ui').style.display = "block";
   document.querySelector('.running-ui').style.display = "none";
   
@@ -162,7 +171,6 @@ function addNewsItem() {
 }
 
 // 指定した開始時刻に自動でタイマーを開始する関数（テキスト入力対応）
-// ※入力欄の onchange イベントで自動呼び出しされます
 function scheduleTimer() {
   const startTimeInput = document.getElementById('start-time').value;
   if (!startTimeInput) return;
