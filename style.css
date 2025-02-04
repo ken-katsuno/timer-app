@@ -51,26 +51,26 @@ body {
 }
 /* ニュース項目の入力フィールド */
 .news-items input[type="text"] {
-    width: 200px; /* ニュースタイトルは広め */
-    padding: 10px;
-    margin: 0 10px;
-    border: 2px solid #fff;
-    border-radius: 5px;
-    font-size: 2em;
-    background: transparent;
-    color: #fff;
+  width: 200px; /* ニュースタイトルは広め */
+  padding: 10px;
+  margin: 0 10px;
+  border: 2px solid #fff;
+  border-radius: 5px;
+  font-size: 2em;
+  background: transparent;
+  color: #fff;
 }
 
 /* 予定尺の入力欄を小さく */
 .news-items input[type="number"] {
-    width: 80px; /* 予定尺を小さめに */
-    padding: 5px;
-    border: 2px solid #fff;
-    border-radius: 5px;
-    font-size: 1.5em;
-    background: transparent;
-    color: #fff;
-    text-align: center;
+  width: 80px; /* 予定尺を小さめに */
+  padding: 5px;
+  border: 2px solid #fff;
+  border-radius: 5px;
+  font-size: 1.5em;
+  background: transparent;
+  color: #fff;
+  text-align: center;
 }
 
 #add-item,
@@ -116,9 +116,6 @@ body {
   justify-items: center;
 }
 
-  width: 100%;
-  padding-left: 20px;
-  
 #time-left .label {
   font-size: 1em;
 }
@@ -228,4 +225,35 @@ body {
     margin: 10px;
     justify-self: center;
   }
+}
+
+/* 追加したスケジュールUIのスタイル */
+.schedule-ui {
+  margin: 20px 0;
+}
+.schedule-ui label {
+  font-size: 1.5em;
+  margin-right: 10px;
+}
+.schedule-ui input[type="time"] {
+  font-size: 1.5em;
+  padding: 5px;
+  border: 2px solid #fff;
+  border-radius: 5px;
+  background: transparent;
+  color: #fff;
+}
+.schedule-ui button {
+  background: transparent;
+  color: #fff;
+  border: 2px solid #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1.5em;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.schedule-ui button:hover {
+  background: #fff;
+  color: #000;
 }
