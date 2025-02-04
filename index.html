@@ -1,195 +1,73 @@
-// サービスワーカーの登録（必要な場合）
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/service-worker.js")
-    .then(() => console.log("Service Worker Registered"));
-}
-
-// グローバル変数の定義
-let currentNewsIndex = 0;      // 現在のニュース項目のインデックス（0～）
-let programTime = 0;           // 番組時間（秒）
-let remainingProgramTime = 0;  // 残りの番組時間（秒）
-let timerInterval;             // 番組時間カウントダウン用タイマー
-let remainingCushionTime = 0;  // クッション時間（秒）
-let elapsedTime = 0;           // 現在のニュース項目の実際の読了時間（秒）
-let newsTimes = [];            // 各ニュース項目の予定尺（秒）の配列
-
-// スケジュールタイマー用のタイムアウトID
-let scheduleTimeout = null;
-
-// DOMから各ニュース項目の予定尺（秒）を取得する関数
-function getNewsTimes() {
-  let times = [];
-  const inputs = document.querySelectorAll("#news-list .planned-time");
-  inputs.forEach(input => {
-    let value = Number(input.value);
-    times.push(value || 0);
-  });
-  return times;
-}
-
-// 番組時間と各ニュース項目の予定尺から初期のクッション時間を計算する関数
-function calculateCushionTime() {
-  const minutes = Number(document.getElementById("program-time-minutes").value) || 0;
-  const seconds = Number(document.getElementById("program-time-seconds").value) || 0;
-  programTime = minutes * 60 + seconds;
-  if (programTime) {
-    remainingProgramTime = programTime;
-  }
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>クッションタイマー</title>
   
-  newsTimes = getNewsTimes();
-  const totalPlanned = newsTimes.reduce((a, b) => a + b, 0);
+  <!-- PWA設定 -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
   
-  remainingCushionTime = programTime - totalPlanned;
-  updateCushionDisplay();
-}
-
-// クッション時間の表示更新
-function updateCushionDisplay() {
-  let displayText = "";
-  if (remainingCushionTime < 0) {
-    displayText = `- ${formatTime(Math.abs(remainingCushionTime))}`;
-  } else {
-    displayText = formatTime(remainingCushionTime);
-  }
-  document.querySelector("#cushion-time .value").innerText = displayText;
-  document.querySelector("#pre-cushion-time .value").innerText = displayText;
-}
-
-// 秒数を mm:ss 形式にフォーマットする関数
-function formatTime(sec) {
-  const m = Math.floor(sec / 60);
-  const s = sec % 60;
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
-// タイマー開始処理
-function startTimer() {
-  calculateCushionTime();
-  newsTimes = getNewsTimes();
-  document.getElementById("start").disabled = true;
+  <!-- Google Fonts: Anton（数字用フォント） -->
+  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 初期状態は pre-start クラス -->
+  <div class="timer-container pre-start">
+    <!-- Pre‑start UI（番組開始前の入力画面） -->
+    <div class="prestart-ui">
+      <!-- 番組時間の入力 -->
+      <div class="program-time-input">
+        <span>番組時間</span><br>
+        <input type="number" id="program-time-minutes" placeholder="分" min="0" oninput="calculateCushionTime()">
+        <span>分</span>
+        <input type="number" id="program-time-seconds" placeholder="秒" min="0" max="59" oninput="calculateCushionTime()">
+        <span>秒</span>
+      </div>
+      <!-- ニュース項目の入力 -->
+      <div class="news-items">
+        <ul id="news-list">
+          <li>
+            <input type="text" class="news-title" placeholder="ニュース項目 1">
+            <input type="number" class="planned-time" placeholder="予定尺（秒）" oninput="calculateCushionTime()">
+          </li>
+        </ul>
+        <button id="add-item" onclick="addNewsItem()">＋ ニュース項目追加</button>
+      </div>
+      <!-- クッション時間の表示 -->
+      <p id="pre-cushion-time">
+        <span class="label">クッション時間:</span>
+        <span class="value">00:00</span>
+      </p>
+      <!-- 開始時刻の入力（テキスト入力で HH:MM:SS 形式、pattern 属性でチェック） -->
+      <div class="schedule-ui">
+        <label for="start-time">開始時刻 (HH:MM:SS):</label>
+        <input type="text" id="start-time" placeholder="HH:MM:SS" pattern="^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$" onchange="scheduleTimer()">
+      </div>
+      <!-- 手動で即時開始したい場合用のボタン（任意） -->
+      <button id="start" onclick="startTimer()">タイマー開始</button>
+    </div>
+    
+    <!-- Running UI（タイマー開始後の表示） -->
+    <div class="running-ui" style="display: none;">
+      <div class="timer-display">
+        <p id="time-left">
+          <span class="label">残り番組時間:</span>
+          <span class="value">00:00</span>
+        </p>
+        <p id="cushion-time">
+          <span class="label">クッション時間:</span>
+          <span class="value">00:00</span>
+        </p>
+        <h3 id="current-news">ニュース 1</h3>
+      </div>
+      <button id="end-item" onclick="endItem()">項目終了</button>
+      <button id="reset" onclick="resetTimer()">リセット</button>
+    </div>
+  </div>
   
-  // Pre‑start UI を非表示に、Running UI を表示
-  document.querySelector('.prestart-ui').style.display = "none";
-  document.querySelector('.running-ui').style.display = "block";
-  
-  currentNewsIndex = 0;
-  startNextNews();
-  timerInterval = setInterval(updateTimer, 1000);
-  
-  const container = document.querySelector('.timer-container');
-  container.classList.remove('pre-start');
-  container.classList.add('running');
-}
-
-// 番組時間のカウントダウンと、ニュース項目の読了時間更新
-function updateTimer() {
-  remainingProgramTime--;
-  elapsedTime++;
-  
-  if (remainingProgramTime <= 0) {
-    document.querySelector("#time-left .value").innerText = "00:00";
-    clearInterval(timerInterval);
-  } else {
-    document.querySelector("#time-left .value").innerText = formatTime(remainingProgramTime);
-  }
-}
-
-// 次のニュース項目を開始する関数
-function startNextNews() {
-  if (currentNewsIndex < newsTimes.length) {
-    const titleInput = document.querySelectorAll("#news-list .news-title")[currentNewsIndex];
-    const title = titleInput && titleInput.value.trim() !== "" ? titleInput.value : `ニュース ${currentNewsIndex + 1}`;
-    document.getElementById("current-news").innerText = title;
-    elapsedTime = 0;
-  } else {
-    clearInterval(timerInterval);
-    document.getElementById("current-news").innerText = "全ニュース終了";
-    document.getElementById("end-item").disabled = true;
-    setTimeout(resetTimer, 3000);
-  }
-}
-
-// 項目終了ボタン押下時の処理
-function endItem() {
-  const plannedTime = newsTimes[currentNewsIndex] || 0;
-  const diff = plannedTime - elapsedTime;
-  remainingCushionTime += diff;
-  updateCushionDisplay();
-  
-  currentNewsIndex++;
-  startNextNews();
-  elapsedTime = 0;
-}
-
-// リセット処理（入力内容は保持）
-function resetTimer() {
-  clearInterval(timerInterval);
-  timerInterval = null;
-  elapsedTime = 0;
-  remainingProgramTime = programTime;
-  document.querySelector("#time-left .value").innerText = formatTime(remainingProgramTime);
-  
-  // UIを元に戻す
-  document.querySelector('.prestart-ui').style.display = "block";
-  document.querySelector('.running-ui').style.display = "none";
-  
-  currentNewsIndex = 0;
-  calculateCushionTime();
-  document.getElementById("start").disabled = false;
-  
-  const container = document.querySelector('.timer-container');
-  container.classList.remove('running');
-  container.classList.add('pre-start');
-  
-  // 既にスケジュールされているタイマーがあればクリア
-  if (scheduleTimeout) {
-    clearTimeout(scheduleTimeout);
-    scheduleTimeout = null;
-  }
-}
-
-// ニュース項目を動的に追加する関数
-function addNewsItem() {
-  const newsList = document.getElementById("news-list");
-  const newIndex = newsList.children.length + 1;
-  const li = document.createElement("li");
-  li.innerHTML = `
-    <input type="text" class="news-title" placeholder="ニュース項目 ${newIndex}">
-    <input type="number" class="planned-time" placeholder="予定尺（秒）" oninput="calculateCushionTime()">
-  `;
-  newsList.appendChild(li);
-  calculateCushionTime();
-}
-
-// 指定した開始時刻に自動でタイマーを開始する関数（テキスト入力対応）
-// ※入力欄の onchange イベントで自動呼び出しされます
-function scheduleTimer() {
-  const startTimeInput = document.getElementById('start-time').value;
-  if (!startTimeInput) return;
-  
-  // 入力値は "HH:MM:SS" または "HH:MM" 形式とする
-  const parts = startTimeInput.split(':').map(Number);
-  const targetHour = parts[0];
-  const targetMinute = parts[1];
-  const targetSecond = parts.length === 3 ? parts[2] : 0;
-  
-  const now = new Date();
-  let targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), targetHour, targetMinute, targetSecond);
-  
-  // 指定時刻が現在より過去の場合は翌日に設定
-  if (targetTime <= now) {
-    targetTime.setDate(targetTime.getDate() + 1);
-  }
-  
-  const delay = targetTime.getTime() - now.getTime();
-  console.log(`タイマーが ${targetTime.toLocaleTimeString()} に自動開始されます。（約 ${Math.round(delay/1000)} 秒後）`);
-  
-  // 既にスケジュールされているタイマーがあればクリア
-  if (scheduleTimeout) {
-    clearTimeout(scheduleTimeout);
-  }
-  
-  scheduleTimeout = setTimeout(() => {
-    startTimer();
-  }, delay);
-}
+  <script src="script.js"></script>
+</body>
+</html>
