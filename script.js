@@ -1,10 +1,10 @@
-// サービスワーカーの登録
+// サービスワーカーの登録（必要な場合）
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/service-worker.js")
     .then(() => console.log("Service Worker Registered"));
 }
 
-// グローバル変数の定義
+// グローバル変数
 let currentNewsIndex = 0;      // 現在のニュース項目のインデックス（0～）
 let programTime = 0;           // 番組時間（秒）
 let remainingProgramTime = 0;  // 残りの番組時間（秒）
@@ -12,6 +12,9 @@ let timerInterval;             // 番組時間カウントダウン用タイマ�
 let remainingCushionTime = 0;  // クッション時間（秒）
 let elapsedTime = 0;           // 現在のニュース項目の実際の読了時間（秒）
 let newsTimes = [];            // 各ニュース項目の予定尺（秒）の配列
+
+// スケジュールタイマー用変数（自動スケジュール管理）
+let scheduleTimeout = null;
 
 // DOMから各ニュース項目の予定尺（秒）を取得する関数
 function getNewsTimes() {
@@ -40,7 +43,7 @@ function calculateCushionTime() {
   updateCushionDisplay();
 }
 
-// クッション時間の表示を更新する関数
+// クッション時間の表示更新
 function updateCushionDisplay() {
   let displayText = "";
   if (remainingCushionTime < 0) {
@@ -59,14 +62,13 @@ function formatTime(sec) {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-// タイマー開始時の処理を行う関数
+// タイマー開始処理
 function startTimer() {
   calculateCushionTime();
   newsTimes = getNewsTimes();
   document.getElementById("start").disabled = true;
-  document.getElementById("schedule-start").disabled = true;
   
-  // Pre‑start UI を非表示に、Running UI を表示
+  // Pre‑start UI を非表示、Running UI を表示
   document.querySelector('.prestart-ui').style.display = "none";
   document.querySelector('.running-ui').style.display = "block";
   
@@ -79,7 +81,7 @@ function startTimer() {
   container.classList.add('running');
 }
 
-// 番組時間のカウントダウンと、現在のニュース項目の実際の読了時間の更新を行う関数
+// 番組時間のカウントダウンおよびニュース項目の読了時間更新
 function updateTimer() {
   remainingProgramTime--;
   elapsedTime++;
@@ -107,7 +109,7 @@ function startNextNews() {
   }
 }
 
-// 項目終了ボタンを押したときの処理を行う関数
+// 項目終了ボタン押下時の処理
 function endItem() {
   const plannedTime = newsTimes[currentNewsIndex] || 0;
   const diff = plannedTime - elapsedTime;
@@ -119,7 +121,7 @@ function endItem() {
   elapsedTime = 0;
 }
 
-// リセットボタン：タイマー進行状態をリセットする関数（入力内容は保持）
+// リセット処理（入力内容は保持）
 function resetTimer() {
   clearInterval(timerInterval);
   timerInterval = null;
@@ -127,19 +129,23 @@ function resetTimer() {
   remainingProgramTime = programTime;
   document.querySelector("#time-left .value").innerText = formatTime(remainingProgramTime);
   
-  // Pre‑start UI を再表示、Running UI を非表示に戻す
+  // UIを元に戻す
   document.querySelector('.prestart-ui').style.display = "block";
   document.querySelector('.running-ui').style.display = "none";
   
   currentNewsIndex = 0;
   calculateCushionTime();
   document.getElementById("start").disabled = false;
-  document.getElementById("schedule-start").disabled = false;
-  document.getElementById("end-item").disabled = false;
   
   const container = document.querySelector('.timer-container');
   container.classList.remove('running');
   container.classList.add('pre-start');
+  
+  // スケジュール済みのタイマーがあればクリア
+  if (scheduleTimeout) {
+    clearTimeout(scheduleTimeout);
+    scheduleTimeout = null;
+  }
 }
 
 // ニュース項目を動的に追加する関数
@@ -155,37 +161,36 @@ function addNewsItem() {
   calculateCushionTime();
 }
 
-// 指定した開始時刻にタイマーをスタートさせるための関数（秒まで対応）
+// 指定した開始時刻に自動でタイマーを開始する関数（秒まで対応）
+// ※入力欄の onchange イベントで自動呼び出しされます
 function scheduleTimer() {
   const startTimeInput = document.getElementById('start-time').value;
-  if (!startTimeInput) {
-    alert("開始時刻を入力してください。");
-    return;
-  }
+  if (!startTimeInput) return;
   
-  // 入力値は "HH:MM:SS" または "HH:MM" 形式であると仮定
+  // 入力値は "HH:MM:SS" または "HH:MM" 形式とする
   const parts = startTimeInput.split(':').map(Number);
   const targetHour = parts[0];
   const targetMinute = parts[1];
-  // パートが3つあれば秒も指定されている。なければ秒は0とする
   const targetSecond = parts.length === 3 ? parts[2] : 0;
   
   const now = new Date();
-  // 本日の日付で対象時刻のDateオブジェクトを作成
   let targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), targetHour, targetMinute, targetSecond);
   
-  // 対象時刻が現在より過去の場合は、翌日に設定する
+  // 対象時刻が現在よりも過去の場合は翌日に設定
   if (targetTime <= now) {
     targetTime.setDate(targetTime.getDate() + 1);
   }
   
   const delay = targetTime.getTime() - now.getTime();
-  console.log(`タイマーは ${delay / 1000} 秒後 (約 ${targetTime.toLocaleTimeString()} に) 開始されます。`);
+  console.log(`タイマーが ${targetTime.toLocaleTimeString()} に自動開始されます。（約 ${Math.round(delay/1000)} 秒後）`);
   
-  // 指定した時刻になるまで待ってから startTimer() を実行
-  setTimeout(() => {
+  // 既にスケジュールされているタイマーがあればクリア
+  if (scheduleTimeout) {
+    clearTimeout(scheduleTimeout);
+  }
+  
+  // 指定時刻になったら startTimer() を実行
+  scheduleTimeout = setTimeout(() => {
     startTimer();
   }, delay);
-  
-  alert(`タイマーは約 ${Math.round(delay / 1000)} 秒後 ( ${targetTime.toLocaleTimeString()} ) に開始されます。`);
 }
