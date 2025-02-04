@@ -228,7 +228,7 @@ body {
   color: var(--button-hover-text);
 }
 
-/* UIの表示切り替え */
+/* UI の表示切り替え */
 .pre-start .prestart-ui {
   display: block;
 }
@@ -274,4 +274,9 @@ body {
     margin: 10px;
     justify-self: center;
   }
+}
+
+/* クッション時間がマイナスの場合のスタイル */
+.negative {
+  color: red;
 }
