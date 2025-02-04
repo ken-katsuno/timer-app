@@ -43,8 +43,8 @@
       <div class="schedule-ui">
         <label for="start-time">開始時刻 (HH:MM:SS):</label>
         <!-- step="1" を追加して秒まで入力可能に -->
-        <input type="time" id="start-time" step="1">
-        <button id="schedule-start" onclick="scheduleTimer()">開始をスケジュール</button>
+        <input type="time" id="start-time" step="1"onchange="scheduleTimer()"
+       onclick="scheduleTimer()">
       </div>
       <button id="start" onclick="startTimer()">タイマー開始</button>
     </div>
