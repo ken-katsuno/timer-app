@@ -123,13 +123,16 @@ body {
   color: var(--text-color);
 }
 
+/* 入力欄を小さくし、HH:MM:SS がぴったり収まるように */
 .schedule-ui input[type="text"] {
+  width: 10ch;
   font-size: 1.5em;
   padding: 5px;
   border: 2px solid var(--border-color);
   border-radius: 5px;
   background: #FFFFFF;
   color: var(--text-color);
+  text-align: center;
 }
 
 /* ------------------ */
