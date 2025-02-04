@@ -4,11 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>クッションタイマー</title>
-
+  
   <!-- PWA設定 -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#000000">
-</head>
   
   <!-- Google Fonts: Anton（大胆でインパクトのある数字用） -->
   <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
@@ -17,7 +16,7 @@
 <body>
   <!-- 初期状態は pre-start クラス -->
   <div class="timer-container pre-start">
-    <!-- Pre-start UI：入力部分（番組開始前） -->
+    <!-- Pre‑start UI：入力部分（番組開始前） -->
     <div class="prestart-ui">
       <div class="program-time-input">
         <span>番組時間</span><br>
@@ -35,11 +34,18 @@
         </ul>
         <button id="add-item" onclick="addNewsItem()">＋ ニュース項目追加</button>
       </div>
-      <!-- Pre-start UI：クッション時間の表示 -->
+      <!-- Pre‑start UI：クッション時間の表示 -->
       <p id="pre-cushion-time">
         <span class="label">クッション時間:</span>
         <span class="value">00:00</span>
       </p>
+      <!-- スケジュール機能のUI -->
+      <div class="schedule-ui">
+        <label for="start-time">開始時刻 (HH:MM:SS):</label>
+        <!-- step="1" を追加して秒まで入力可能に -->
+        <input type="time" id="start-time" step="1">
+        <button id="schedule-start" onclick="scheduleTimer()">開始をスケジュール</button>
+      </div>
       <button id="start" onclick="startTimer()">タイマー開始</button>
     </div>
     
@@ -62,12 +68,5 @@
   </div>
   
   <script src="script.js"></script>
-  <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/service-worker.js")
-      .then(() => console.log("Service Worker Registered"));
-  }
-</script>
-
 </body>
 </html>
