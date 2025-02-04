@@ -1,10 +1,24 @@
 /* ------------------ */
 /* 共通スタイル */
 /* ------------------ */
+:root {
+  --bg-color: #F8E8D8;         /* 背景色：パステルベージュ */
+  --text-color: #3D3D3D;       /* テキスト色：濃いグレー */
+  --accent-color: #71A9F7;     /* アクセントカラー：パステルブルー */
+  --accent-color2: #FFB7C5;    /* サブアクセントカラー：パステルピンク */
+  --accent-color3: #77DD77;    /* サブアクセントカラー：パステルグリーン */
+  --border-color: #5FA8D3;     /* 境界線：ミントブルー */
+  --button-bg: var(--accent-color);
+  --button-text: #FFFFFF;
+  --button-hover-bg: #FF6B6B;  /* ホバー時：コーラルピンク */
+  --button-hover-text: #FFFFFF;
+}
+
+
 body {
-  background: #000; /* 黒背景 */
+  background: var(--bg-color);
   font-family: 'Anton', sans-serif;
-  color: #fff;
+  color: var(--text-color);
   margin: 0;
   padding: 0;
 }
@@ -31,15 +45,15 @@ body {
   width: 60px;
   padding: 10px;
   margin: 0 10px;
-  border: 2px solid #fff;
+  border: 2px solid var(--border-color);
   border-radius: 5px;
   font-size: 1.2em;
-  background: transparent;
-  color: #fff;
+  background: #FFFFFF;
+  color: var(--text-color);
 }
 .program-time-input span {
   font-size: 1.2em;
-  color: #fff;
+  color: var(--text-color);
 }
 .news-items ul {
   list-style: none;
@@ -54,40 +68,40 @@ body {
   width: 200px; /* ニュースタイトルは広め */
   padding: 10px;
   margin: 0 10px;
-  border: 2px solid #fff;
+  border: 2px solid var(--border-color);
   border-radius: 5px;
   font-size: 2em;
-  background: transparent;
-  color: #fff;
+  background: #FFFFFF;
+  color: var(--text-color);
 }
 
 /* 予定尺の入力欄を小さく */
 .news-items input[type="number"] {
   width: 80px; /* 予定尺を小さめに */
   padding: 5px;
-  border: 2px solid #fff;
+  border: 2px solid var(--border-color);
   border-radius: 5px;
   font-size: 1.5em;
-  background: transparent;
-  color: #fff;
+  background: #FFFFFF;
+  color: var(--text-color);
   text-align: center;
 }
 
 #add-item,
 #start {
-  background: transparent;
-  color: #fff;
-  border: 2px solid #fff;
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: 2px solid var(--border-color);
   padding: 15px 30px;
   border-radius: 5px;
   font-size: 2em;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s, color 0.3s;
 }
 #add-item:hover,
 #start:hover {
-  background: #fff;
-  color: #000;
+  background: var(--button-hover-bg);
+  color: var(--button-hover-text);
 }
 
 /* Pre‑start UI 表示 */
@@ -118,9 +132,11 @@ body {
 
 #time-left .label {
   font-size: 1em;
+  color: var(--text-color);
 }
 #time-left .value {
   font-size: 8em;
+  color: var(--text-color);
 }
 
 #cushion-time {
@@ -131,9 +147,11 @@ body {
 }
 #cushion-time .label {
   font-size: 1em;
+  color: var(--text-color);
 }
 #cushion-time .value {
   font-size: 8em;
+  color: var(--text-color);
 }
 
 /* 中央：ニュースのタイトル（左右にまたがる） */
@@ -142,6 +160,7 @@ body {
   font-size: 3.5em;
   text-align: center;
   width: 100%;
+  color: var(--text-color);
 }
 
 /* 左下：項目終了ボタン（そこそこ大きく） */
@@ -151,17 +170,17 @@ body {
   justify-self: start;
   align-self: end;
   margin-left: 20px;
-  background: transparent;
-  color: #fff;
-  border: 2px solid #fff;
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: 2px solid var(--border-color);
   padding: 15px 30px;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s, color 0.3s;
 }
 #end-item:hover {
-  background: #fff;
-  color: #000;
+  background: var(--button-hover-bg);
+  color: var(--button-hover-text);
 }
 
 /* 右下：リセットボタン（小さめ） */
@@ -171,17 +190,17 @@ body {
   justify-self: end;
   align-self: end;
   margin-right: 20px;
-  background: transparent;
-  color: #fff;
-  border: 2px solid #fff;
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: 2px solid var(--border-color);
   padding: 8px 15px;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s, color 0.3s;
 }
 #reset:hover {
-  background: #fff;
-  color: #000;
+  background: var(--button-hover-bg);
+  color: var(--button-hover-text);
 }
 
 /* Running UI 表示 */
@@ -234,26 +253,27 @@ body {
 .schedule-ui label {
   font-size: 1.5em;
   margin-right: 10px;
+  color: var(--text-color);
 }
 .schedule-ui input[type="time"] {
   font-size: 1.5em;
   padding: 5px;
-  border: 2px solid #fff;
+  border: 2px solid var(--border-color);
   border-radius: 5px;
-  background: transparent;
-  color: #fff;
+  background: #FFFFFF;
+  color: var(--text-color);
 }
 .schedule-ui button {
-  background: transparent;
-  color: #fff;
-  border: 2px solid #fff;
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: 2px solid var(--border-color);
   padding: 10px 20px;
   border-radius: 5px;
   font-size: 1.5em;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s, color 0.3s;
 }
 .schedule-ui button:hover {
-  background: #fff;
-  color: #000;
+  background: var(--button-hover-bg);
+  color: var(--button-hover-text);
 }
