@@ -277,6 +277,7 @@ body {
 }
 
 /* クッション時間がマイナスの場合のスタイル */
+/* !important を追加して、より優先度を上げる */
 .negative {
-  color: red;
+  color: red !important;
 }
