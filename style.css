@@ -116,38 +116,33 @@ body {
   justify-items: center;
 }
 
-/* 左上：残り番組時間（ラベルは小さく、数字は大きく） */
-#time-left {
-  grid-area: time-left;
   width: 100%;
   padding-left: 20px;
-  text-align: left;
-}
+  
 #time-left .label {
-  font-size: 0.5em;
+  font-size: 1em;
 }
 #time-left .value {
-  font-size: 5em;
+  font-size: 8em;
 }
 
-/* 右上：クッション時間（ラベルは小さく、数字は大きく） */
 #cushion-time {
   grid-area: cushion-time;
   width: 100%;
   padding-right: 20px;
-  text-align: right;
+  text-align: center;
 }
 #cushion-time .label {
-  font-size: 0.5em;
+  font-size: 1em;
 }
 #cushion-time .value {
-  font-size: 5em;
+  font-size: 8em;
 }
 
 /* 中央：ニュースのタイトル（左右にまたがる） */
 #current-news {
   grid-area: current-news;
-  font-size: 4em;
+  font-size: 3.5em;
   text-align: center;
   width: 100%;
 }
