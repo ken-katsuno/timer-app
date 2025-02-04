@@ -49,16 +49,30 @@ body {
 .news-items li {
   margin-bottom: 20px;
 }
-.news-items input {
-  width: 200px;
-  padding: 10px;
-  margin: 0 10px;
-  border: 2px solid #fff;
-  border-radius: 5px;
-  font-size: 2em;
-  background: transparent;
-  color: #fff;
+/* ニュース項目の入力フィールド */
+.news-items input[type="text"] {
+    width: 200px; /* ニュースタイトルは広め */
+    padding: 10px;
+    margin: 0 10px;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    font-size: 2em;
+    background: transparent;
+    color: #fff;
 }
+
+/* 予定尺の入力欄を小さく */
+.news-items input[type="number"] {
+    width: 80px; /* 予定尺を小さめに */
+    padding: 5px;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    font-size: 1.5em;
+    background: transparent;
+    color: #fff;
+    text-align: center;
+}
+
 #add-item,
 #start {
   background: transparent;
