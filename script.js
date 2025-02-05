@@ -146,6 +146,9 @@ function resetTimer() {
   calculateCushionTime();
   document.getElementById("start").disabled = false;
   
+  // ここで「項目終了」ボタンを再度有効化する
+  document.getElementById("end-item").disabled = false;
+  
   const container = document.querySelector('.timer-container');
   container.classList.remove('running');
   container.classList.add('pre-start');
