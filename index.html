@@ -29,9 +29,10 @@
       <!-- ニュース項目の入力 -->
       <div class="news-items">
         <ul id="news-list">
-          <li>
+          <li class="news-item">
             <input type="text" class="news-title" placeholder="ニュース項目 1">
             <input type="number" class="planned-time" placeholder="予定尺（秒）" oninput="calculateCushionTime()">
+            <button class="remove-item" onclick="removeNewsItem(this)" aria-label="削除">🗑️</button>
           </li>
         </ul>
         <button id="add-item" onclick="addNewsItem()">＋ ニュース項目追加</button>
@@ -41,16 +42,16 @@
         <span class="label">クッション時間:</span>
         <span class="value">00:00</span>
       </p>
-      <!-- 開始時刻の入力（テキスト入力で HH:MM:SS 形式、pattern 属性でチェック） -->
+      <!-- 開始時刻の入力（テキスト入力で HH:MM:SS 形式） -->
       <div class="schedule-ui">
         <label for="start-time">開始時刻 (HH:MM:SS):</label>
         <input type="text" id="start-time" placeholder="HH:MM:SS" pattern="^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$" onchange="scheduleTimer()">
       </div>
-      <!-- 手動で即時開始したい場合用のボタン（任意） -->
+      <!-- 手動開始ボタン（任意） -->
       <button id="start" onclick="startTimer()">タイマー開始</button>
     </div>
     
-    <!-- Running UI（タイマー開始後の表示） -->
+    <!-- Running UI（番組開始後の表示） -->
     <div class="running-ui" style="display: none;">
       <div class="timer-display">
         <p id="time-left">
