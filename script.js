@@ -162,11 +162,20 @@ function addNewsItem() {
   const newsList = document.getElementById("news-list");
   const newIndex = newsList.children.length + 1;
   const li = document.createElement("li");
+  li.classList.add("news-item");
   li.innerHTML = `
     <input type="text" class="news-title" placeholder="ニュース項目 ${newIndex}">
     <input type="number" class="planned-time" placeholder="予定尺（秒）" oninput="calculateCushionTime()">
+    <button class="remove-item" onclick="removeNewsItem(this)" aria-label="削除">🗑️</button>
   `;
   newsList.appendChild(li);
+  calculateCushionTime();
+}
+
+// ニュース項目を削除する関数
+function removeNewsItem(button) {
+  const li = button.parentElement;
+  li.remove();
   calculateCushionTime();
 }
 
