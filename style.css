@@ -61,29 +61,35 @@ body {
   color: var(--text-color);
 }
 
+/* ニュース項目関連 */
 .news-items ul {
   list-style: none;
   padding: 0;
   margin-bottom: 20px;
 }
 
-.news-items li {
-  margin-bottom: 20px;
+/* 各ニュース項目を横一線に */
+.news-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+  justify-content: center;
 }
 
-/* ニュース項目の入力フィールド */
-.news-items input[type="text"] {
-  width: 200px;
-  padding: 10px;
-  margin: 0 10px;
+/* ニュース項目名の入力欄は幅を小さめに */
+.news-item .news-title {
+  width: 120px;
+  padding: 5px;
   border: 2px solid var(--border-color);
   border-radius: 5px;
-  font-size: 2em;
+  font-size: 1.5em;
   background: #FFFFFF;
   color: var(--text-color);
 }
 
-.news-items input[type="number"] {
+/* 予定尺入力欄 */
+.news-item .planned-time {
   width: 80px;
   padding: 5px;
   border: 2px solid var(--border-color);
@@ -94,6 +100,21 @@ body {
   text-align: center;
 }
 
+/* ゴミ箱ボタン */
+.news-item .remove-item {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: var(--text-color);
+  padding: 5px;
+}
+
+.news-item .remove-item:hover {
+  color: var(--button-hover-bg);
+}
+
+/* Add News / Start ボタン */
 #add-item,
 #start {
   background: var(--button-bg);
@@ -112,7 +133,7 @@ body {
   color: var(--button-hover-text);
 }
 
-/* スケジュールUI（開始時刻入力） */
+/* スケジュールUI */
 .schedule-ui {
   margin: 20px 0;
 }
@@ -123,7 +144,6 @@ body {
   color: var(--text-color);
 }
 
-/* 入力欄を小さくし、HH:MM:SS がぴったり収まるように */
 .schedule-ui input[type="text"] {
   width: 10ch;
   font-size: 1.5em;
@@ -228,7 +248,7 @@ body {
   color: var(--button-hover-text);
 }
 
-/* UI の表示切り替え */
+/* UI 表示の切り替え */
 .pre-start .prestart-ui {
   display: block;
 }
@@ -276,8 +296,7 @@ body {
   }
 }
 
-/* クッション時間がマイナスの場合のスタイル */
-/* !important を追加して、より優先度を上げる */
+/* クッション時間がマイナスの場合 */
 .negative {
   color: red !important;
 }
